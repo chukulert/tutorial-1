@@ -100,6 +100,10 @@ app.get("/profile/edit", (req, res) => {
 app.post("/profile/edit", (req, res) => {
   const { email } = req.body;
 
+  if(!email.length) {
+    res.render("edit", { email: req.session.email, error: "Please enter a valid email address."})
+  }
+  
   const { id, username } = req.session.user;
   mysqlConnection.query(
     "UPDATE accounts SET email = ? WHERE id = ?",
