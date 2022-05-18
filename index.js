@@ -93,33 +93,33 @@ app.get("/profile/edit", (req, res) => {
     const { email } = req.session.user;
     res.render("edit", { email });
   } else {
-    res.redirect("/login?redirect_url=/profile/edit");
+    res.redirect("/login?redirect_url=/profile");
   }
 });
 
 app.post("/profile/edit", (req, res) => {
-  const { email } = req.body;
+  const { inputEmail } = req.body;
+  const { id, email } = req.session.user;
 
-  if(!email.length) {
-    res.render("edit", { email: req.session.email, error: "Please enter a valid email address."})
-  }
-  
-  const { id, username } = req.session.user;
-  mysqlConnection.query(
-    "UPDATE accounts SET email = ? WHERE id = ?",
-    [`${email}`, `${id}`],
-    function (err, results, fields) {
-      if (err) {
-          res.render("edit", { email: req.session.email, error: "Something went wrong. Please try again."})
+  if (!inputEmail.length) {
+    res.render("edit", { email, error: "Please enter a valid email address." });
+  } else {
+    mysqlConnection.query(
+      "UPDATE accounts SET email = ? WHERE id = ?",
+      [`${email}`, `${id}`],
+      function (err, results, fields) {
+        if (err) {
+          res.render("edit", {
+            email: inputEmail,
+            error: "Something went wrong. Please try again.",
+          });
+        } else {
+          req.session.user.email = inputEmail;
+          res.redirect("/profile");
+        }
       }
-      req.session.user.email = email;
-      res.render("profile", {
-        email,
-        id,
-        username,
-      });
-    }
-  );
+    );
+  }
 });
 
 /** App listening on port */
