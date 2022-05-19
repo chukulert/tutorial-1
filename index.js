@@ -34,7 +34,7 @@ app.post("/login", (req, res) => {
   mysqlConnection.query(
     "SELECT * FROM accounts WHERE username = ? AND password = ? ",
     [`${username}`, `${password}`],
-    function (err, results, fields) {
+    function (err, results) {
       if (results.length) {
         req.session.isLoggedIn = true;
         req.session.user = { ...results[0] };
@@ -107,7 +107,7 @@ app.post("/profile/edit", (req, res) => {
     mysqlConnection.query(
       "UPDATE accounts SET email = ? WHERE id = ?",
       [`${email}`, `${id}`],
-      function (err, results, fields) {
+      function (err, results) {
         if (err) {
           res.render("edit", {
             email: inputEmail,
